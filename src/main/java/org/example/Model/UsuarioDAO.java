@@ -9,7 +9,7 @@ public class UsuarioDAO {
     public boolean cadastrar(Usuario usuario){
         String sql = """
                 INSERT INTO usuarios
-                (login, senha) VALUES(?,?)""";
+                (login, senha, status, perfil) VALUES(?,?,true,'CLIENTE')""";
 
         String senhaHash=BCrypt.hashpw(usuario.getSenha(),
                 BCrypt.gensalt(12));
@@ -25,7 +25,7 @@ public class UsuarioDAO {
         }
     }
     public boolean inativarUsuario(Usuario usuario) {
-        String sql = "UPDATE usuario SET status = false WHERE id = ?";
+        String sql = "UPDATE usuarios SET status = false WHERE id = ?";
 
         try (Connection conexao = Conexao.conectar();
              PreparedStatement stmt = conexao.prepareStatement(sql)) {
@@ -41,9 +41,9 @@ public class UsuarioDAO {
     }
     public Usuario consultarUsuario (String login){
         String sql = """
-                SELECT if, login, senha, status
+                SELECT id, login, senha, status
                 FROM usuarios
-                WHERE login =?
+                WHERE login = ?
                 """;
         try (Connection conexao  = Conexao.conectar();
         PreparedStatement stmt = conexao.prepareStatement(sql)){
@@ -64,7 +64,33 @@ public class UsuarioDAO {
 
         return null;
     }
+
+    public String consultarPerfil(String login) {
+        String sql = "SELECT perfil FROM usuarios WHERE login = ? AND status = true";
+        try (Connection conexao = Conexao.conectar();
+             PreparedStatement stmt = conexao.prepareStatement(sql)) {
+            stmt.setString(1, login);
+            try (ResultSet resultado = stmt.executeQuery()) {
+                return resultado.next() ? resultado.getString("perfil") : null;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public static boolean autenticar(String login, String senha) {
-        return false;
+        if (login == null || senha == null) {
+            return false;
+        }
+        Usuario usuario = new UsuarioDAO().consultarUsuario(login.trim());
+        if (usuario == null || !usuario.getStatus()) {
+            return false;
+        }
+        try {
+            return BCrypt.checkpw(senha, usuario.getSenha());
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
     }
 }

@@ -20,6 +20,9 @@ public class Validacao {
     }
 
     public static String getPerfil(String usuario) {
-        return null;
+        if (usuario == null || usuario.isBlank()) {
+            return null;
+        }
+        return new UsuarioDAO().consultarPerfil(usuario.trim());
     }
 }

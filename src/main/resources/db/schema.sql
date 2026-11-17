@@ -1,0 +1,22 @@
+CREATE TABLE IF NOT EXISTS usuarios (
+    id BIGSERIAL PRIMARY KEY,
+    login VARCHAR(120) NOT NULL UNIQUE,
+    senha VARCHAR(60) NOT NULL,
+    status BOOLEAN NOT NULL DEFAULT TRUE,
+    perfil VARCHAR(20) NOT NULL DEFAULT 'CLIENTE'
+        CHECK (perfil IN ('ADMIN', 'CLIENTE'))
+);
+
+CREATE TABLE IF NOT EXISTS propostas (
+    id BIGSERIAL PRIMARY KEY,
+    nome VARCHAR(80) NOT NULL,
+    email VARCHAR(80) NOT NULL,
+    telefone VARCHAR(20) NOT NULL,
+    veiculo_id INTEGER NOT NULL,
+    mensagem VARCHAR(500) NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'NOVA',
+    criada_em TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_propostas_criada_em
+    ON propostas (criada_em DESC);

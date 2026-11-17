@@ -33,6 +33,9 @@
                     <div>
                         <h1>Conte qual carro você quer ver de perto.</h1>
                         <p class="lead">Informe o contato e o carro. Se os dados estiverem completos, a confirmação aparece nesta mesma página.</p>
+                        <c:if test="${falhaEnvio}">
+                            <p role="alert">Não foi possível registrar sua proposta agora. Tente novamente mais tarde.</p>
+                        </c:if>
                         <form class="formulario" action="${ctx}/proposta" method="post">
                             <label>
                                 Nome

@@ -342,6 +342,77 @@ body.aurora .secao-lista {
     padding-top: 10px;
 }
 
+body.aurora .admin-cabecalho {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 28px;
+}
+
+body.aurora .admin-cabecalho h1 {
+    margin-bottom: 0;
+    font-size: 2.5rem;
+}
+
+body.aurora .admin-tabela-wrap {
+    overflow-x: auto;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+}
+
+body.aurora .admin-tabela {
+    width: 100%;
+    min-width: 860px;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+body.aurora .admin-tabela th,
+body.aurora .admin-tabela td {
+    padding: 14px 12px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+}
+
+body.aurora .admin-tabela th {
+    color: var(--muted);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+body.aurora .admin-tabela td {
+    font-size: 0.92rem;
+}
+
+body.aurora .admin-tabela td a {
+    display: block;
+}
+
+body.aurora .admin-mensagem {
+    max-width: 300px;
+    white-space: normal;
+}
+
+body.aurora .admin-vazio,
+body.aurora .admin-alerta {
+    padding: 18px 0;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+}
+
+body.aurora .admin-alerta {
+    color: #8c2f25;
+}
+
+@media (max-width: 760px) {
+    body.aurora .admin-cabecalho {
+        align-items: start;
+        flex-direction: column;
+    }
+}
+
 body.aurora .hero-grade,
 body.aurora .sobre-topo,
 body.aurora .proposta-grade,

@@ -1,4 +1,4 @@
-package org.example.view;
+package org.example.Controller;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -14,7 +14,7 @@ public class Servlet2 extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/plain");
+        response.setContentType("text/plain;charset=UTF-8");
         PrintWriter out = response.getWriter();
         out.println("Servlet2 ativo");
     }
@@ -24,10 +24,8 @@ public class Servlet2 extends HttpServlet {
             throws ServletException, IOException {
         String mensagem = request.getParameter("mensagem");
         response.setContentType("text/plain;charset=UTF-8");
-
         PrintWriter out = response.getWriter();
-
-        out.println("Mensagem recebida: ");
+        out.println("Mensagem recebida:");
         out.println(mensagem);
     }
 }

@@ -7,8 +7,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.example.Model.Estoque;
 import org.example.Model.Proposta;
+import org.example.Model.PropostaDAO;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Map;
 
 @WebServlet("/proposta")
@@ -33,10 +35,19 @@ public class PropostaServlet extends HttpServlet {
         proposta.setMensagem(request.getParameter("mensagem"));
 
         Map<String, String> erros = proposta.validar();
-        preparar(request, proposta, erros.isEmpty());
         if (!erros.isEmpty()) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             request.setAttribute("erros", erros);
+            preparar(request, proposta, false);
+        } else {
+            try {
+                new PropostaDAO().salvar(proposta);
+                preparar(request, proposta, true);
+            } catch (SQLException e) {
+                response.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
+                request.setAttribute("falhaEnvio", true);
+                preparar(request, proposta, false);
+            }
         }
         Pagina.mostrar(request, response, "proposta.jsp");
     }

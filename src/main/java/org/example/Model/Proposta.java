@@ -2,6 +2,7 @@ package org.example.Model;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.time.LocalDateTime;
 import java.util.regex.Pattern;
 
 public class Proposta {
@@ -12,6 +13,42 @@ public class Proposta {
     private String telefone = "";
     private int veiculoId;
     private String mensagem = "";
+    private long id;
+    private String veiculoNome = "";
+    private String status = "";
+    private LocalDateTime criadaEm;
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getVeiculoNome() {
+        return veiculoNome;
+    }
+
+    public void setVeiculoNome(String veiculoNome) {
+        this.veiculoNome = veiculoNome == null ? "" : veiculoNome;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status == null ? "" : status;
+    }
+
+    public LocalDateTime getCriadaEm() {
+        return criadaEm;
+    }
+
+    public void setCriadaEm(LocalDateTime criadaEm) {
+        this.criadaEm = criadaEm;
+    }
 
     public String getNome() {
         return nome;
