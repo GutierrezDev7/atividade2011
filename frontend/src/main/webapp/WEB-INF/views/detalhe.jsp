@@ -46,8 +46,12 @@
                             <li><span>Portas</span><strong><c:out value="${carro.portas}"/></strong></li>
                         </ul>
                         <div class="acoes">
-                            <a class="botao" href="${ctx}/proposta?id=${carro.id}">Quero este veículo</a>
-                            <a class="botao secundario" href="${ctx}/estoque?marca=${carro.marca}">Mais <c:out value="${carro.marca}"/></a>
+                            <form class="comprar-acao" action="${ctx}/carrinho" method="post">
+                                <input type="hidden" name="acao" value="adicionar">
+                                <input type="hidden" name="veiculoId" value="${carro.id}">
+                                <button class="botao" type="submit">Adicionar ao carrinho</button>
+                            </form>
+                            <a class="botao secundario" href="${ctx}/proposta?id=${carro.id}">Agendar test drive</a>
                         </div>
                     </div>
                 </div>

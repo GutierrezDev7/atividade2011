@@ -10,7 +10,6 @@ import org.example.Model.PropostaDAO;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.List;
 
 @WebServlet("/admin")
 public class AdministradorServlet extends HttpServlet {
@@ -28,13 +27,12 @@ public class AdministradorServlet extends HttpServlet {
             return;
         }
 
-        Pagina.preparar(request, "admin", "Painel administrativo");
         try {
+            Pagina.preparar(request, "admin", "Painel administrativo");
             request.setAttribute("propostas", new PropostaDAO().listarTodas());
         } catch (SQLException e) {
-            response.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
-            request.setAttribute("falhaBanco", true);
-            request.setAttribute("propostas", List.of());
+            Pagina.bancoIndisponivel(response);
+            return;
         }
         Pagina.mostrar(request, response, "admin.jsp");
     }

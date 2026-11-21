@@ -18,41 +18,46 @@ public class PropostaServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        Proposta proposta = new Proposta();
-        proposta.setVeiculoId(lerId(request.getParameter("id")));
-        preparar(request, proposta, false);
-        Pagina.mostrar(request, response, "proposta.jsp");
+        try {
+            Proposta proposta = new Proposta();
+            proposta.setVeiculoId(lerId(request.getParameter("id")));
+            preparar(request, proposta, false);
+            Pagina.mostrar(request, response, "proposta.jsp");
+        } catch (SQLException e) {
+            Pagina.bancoIndisponivel(response);
+        }
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        Proposta proposta = new Proposta();
-        proposta.setNome(request.getParameter("nome"));
-        proposta.setEmail(request.getParameter("email"));
-        proposta.setTelefone(request.getParameter("telefone"));
-        proposta.setVeiculoId(lerId(request.getParameter("veiculo")));
-        proposta.setMensagem(request.getParameter("mensagem"));
+        try {
+            Proposta proposta = new Proposta();
+            proposta.setNome(request.getParameter("nome"));
+            proposta.setEmail(request.getParameter("email"));
+            proposta.setTelefone(request.getParameter("telefone"));
+            proposta.setVeiculoId(lerId(request.getParameter("veiculo")));
+            proposta.setMensagem(request.getParameter("mensagem"));
 
-        Map<String, String> erros = proposta.validar();
-        if (!erros.isEmpty()) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            request.setAttribute("erros", erros);
-            preparar(request, proposta, false);
-        } else {
-            try {
+            Map<String, String> erros = proposta.validar();
+            if (proposta.getVeiculoId() > 0 && Estoque.buscarPorId(proposta.getVeiculoId()).isEmpty()) {
+                erros.put("veiculo", "Escolha um veículo do estoque.");
+            }
+            if (!erros.isEmpty()) {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                request.setAttribute("erros", erros);
+                preparar(request, proposta, false);
+            } else {
                 new PropostaDAO().salvar(proposta);
                 preparar(request, proposta, true);
-            } catch (SQLException e) {
-                response.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
-                request.setAttribute("falhaEnvio", true);
-                preparar(request, proposta, false);
             }
+            Pagina.mostrar(request, response, "proposta.jsp");
+        } catch (SQLException e) {
+            Pagina.bancoIndisponivel(response);
         }
-        Pagina.mostrar(request, response, "proposta.jsp");
     }
 
-    private void preparar(HttpServletRequest request, Proposta proposta, boolean enviada) {
+    private void preparar(HttpServletRequest request, Proposta proposta, boolean enviada) throws SQLException {
         Pagina.preparar(request, "proposta", "Proposta");
         request.setAttribute("proposta", proposta);
         request.setAttribute("carros", Estoque.listarTodos());

@@ -29,6 +29,7 @@
             <a class="${pagina eq 'inicio' ? 'ativo' : ''}" href="${ctx}/inicio">Início</a>
             <a class="${pagina eq 'estoque' ? 'ativo' : ''}" href="${ctx}/estoque">Estoque</a>
             <a class="${pagina eq 'sobre' ? 'ativo' : ''}" href="${ctx}/sobre">A Bravura</a>
+            <a class="botao botao-pequeno" href="${ctx}/carrinho">Carrinho<c:if test="${not empty sessionScope.carrinhoVeiculoId}"> · 1</c:if></a>
             <a class="botao botao-pequeno" href="${ctx}/proposta">Fazer proposta</a>
         </nav>
     </div>

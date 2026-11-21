@@ -1,0 +1,85 @@
+package org.example.Model;
+import org.mindrot.jbcrypt.BCrypt;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+public class UsuarioDAO {
+    public boolean cadastrar(Usuario usuario) throws SQLException {
+        String sql = """
+                INSERT INTO usuarios
+                (login, senha, status, perfil) VALUES(?,?,true,'CLIENTE')""";
+
+        String senhaHash=BCrypt.hashpw(usuario.getSenha(),
+                BCrypt.gensalt(12));
+        try(Connection conexao = Conexao.conectar();
+        PreparedStatement stmt = conexao.prepareStatement(sql)){
+            stmt.setString(1,usuario.getLogin());
+            stmt.setString(2,senhaHash);
+            stmt.executeUpdate();
+            return true;
+        }
+    }
+    public boolean inativarUsuario(Usuario usuario) throws SQLException {
+        String sql = "UPDATE usuarios SET status = false WHERE id = ?";
+
+        try (Connection conexao = Conexao.conectar();
+             PreparedStatement stmt = conexao.prepareStatement(sql)) {
+
+            stmt.setInt(1, usuario.getId());
+            int linhasAfetadas = stmt.executeUpdate();
+            return linhasAfetadas == 1;
+        }
+    }
+    public Usuario consultarUsuario (String login) throws SQLException {
+        String sql = """
+                SELECT id, login, senha, status
+                FROM usuarios
+                WHERE login = ?
+                """;
+        try (Connection conexao  = Conexao.conectar();
+        PreparedStatement stmt = conexao.prepareStatement(sql)){
+            stmt.setString(1, login);
+
+            try (ResultSet result = stmt.executeQuery()) {
+                if (result.next()) {
+                    return new Usuario(
+                            result.getInt("id"),
+                            result.getString("login"),
+                            result.getString("senha"),
+                            result.getBoolean("status")
+                    );
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public String consultarPerfil(String login) throws SQLException {
+        String sql = "SELECT perfil FROM usuarios WHERE login = ? AND status = true";
+        try (Connection conexao = Conexao.conectar();
+             PreparedStatement stmt = conexao.prepareStatement(sql)) {
+            stmt.setString(1, login);
+            try (ResultSet resultado = stmt.executeQuery()) {
+                return resultado.next() ? resultado.getString("perfil") : null;
+            }
+        }
+    }
+
+    public static boolean autenticar(String login, String senha) throws SQLException {
+        if (login == null || senha == null) {
+            return false;
+        }
+        Usuario usuario = new UsuarioDAO().consultarUsuario(login.trim());
+        if (usuario == null || !usuario.getStatus()) {
+            return false;
+        }
+        try {
+            return BCrypt.checkpw(senha, usuario.getSenha());
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
+}

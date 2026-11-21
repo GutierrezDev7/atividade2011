@@ -1,15 +1,10 @@
 package org.example.Controller;
 
 import org.example.Model.UsuarioDAO;
+import java.sql.SQLException;
 
 public class Validacao {
-
-    private final UsuarioDAO usuarioDAO;
-
-    public Validacao(){
-        usuarioDAO = new UsuarioDAO();
-    }
-    public static boolean validarLogin(String usuario, String senha){
+    public static boolean validarLogin(String usuario, String senha) throws SQLException {
         if(usuario==null||usuario.isBlank()){
             return false;
         }
@@ -19,7 +14,7 @@ public class Validacao {
         return UsuarioDAO.autenticar(usuario,senha);
     }
 
-    public static String getPerfil(String usuario) {
+    public static String getPerfil(String usuario) throws SQLException {
         if (usuario == null || usuario.isBlank()) {
             return null;
         }

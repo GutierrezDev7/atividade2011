@@ -45,7 +45,7 @@ public class PropostaDAO {
                 proposta.setMensagem(resultado.getString("mensagem"));
                 proposta.setStatus(resultado.getString("status"));
                 proposta.setCriadaEm(resultado.getTimestamp("criada_em").toLocalDateTime());
-                proposta.setVeiculoNome(Estoque.buscarPorId(proposta.getVeiculoId())
+                proposta.setVeiculoNome(new CarroDAO().buscarPorId(proposta.getVeiculoId())
                         .map(carro -> carro.getMarca() + " " + carro.getNome())
                         .orElse("Veículo indisponível"));
                 propostas.add(proposta);

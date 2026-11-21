@@ -102,7 +102,7 @@ public class Proposta {
         if (digitos.length() < 10) {
             erros.put("telefone", "Informe um telefone com DDD.");
         }
-        if (Estoque.buscarPorId(veiculoId).isEmpty()) {
+        if (veiculoId <= 0) {
             erros.put("veiculo", "Escolha um veículo do estoque.");
         }
         if (mensagem.length() < 10) {

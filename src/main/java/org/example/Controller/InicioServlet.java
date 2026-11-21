@@ -8,14 +8,19 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.example.Model.Estoque;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 @WebServlet("/inicio")
 public class InicioServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        Pagina.preparar(request, "inicio", "Início");
-        request.setAttribute("destaques", Estoque.destaques());
-        Pagina.mostrar(request, response, "inicio.jsp");
+        try {
+            Pagina.preparar(request, "inicio", "Início");
+            request.setAttribute("destaques", Estoque.destaques());
+            Pagina.mostrar(request, response, "inicio.jsp");
+        } catch (SQLException e) {
+            Pagina.bancoIndisponivel(response);
+        }
     }
 }

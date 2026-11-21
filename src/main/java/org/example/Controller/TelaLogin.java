@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 @WebServlet("/LoginServlet")
 public class TelaLogin extends HttpServlet {
@@ -23,21 +24,29 @@ public class TelaLogin extends HttpServlet {
         String usuario = request.getParameter("usuario");
         String senha = request.getParameter("senha");
 
-        if (!Validacao.validarLogin(usuario, senha)) {
-            response.sendRedirect(request.getContextPath() + "/login.html?erro=1");
-            return;
-        }
+        try {
+            if (!Validacao.validarLogin(usuario, senha)) {
+                response.sendRedirect(request.getContextPath() + "/login.html?erro=1");
+                return;
+            }
 
-        String perfil = Validacao.getPerfil(usuario);
-        HttpSession sessaoAnterior = request.getSession(false);
-        if (sessaoAnterior != null) {
-            sessaoAnterior.invalidate();
-        }
-        HttpSession session = request.getSession(true);
-        session.setAttribute("usuario", usuario.trim());
-        session.setAttribute("perfil", perfil);
+            String perfil = Validacao.getPerfil(usuario);
+            if (perfil == null) {
+                response.sendRedirect(request.getContextPath() + "/login.html?erro=1");
+                return;
+            }
+            HttpSession sessaoAnterior = request.getSession(false);
+            if (sessaoAnterior != null) {
+                sessaoAnterior.invalidate();
+            }
+            HttpSession session = request.getSession(true);
+            session.setAttribute("usuario", usuario.trim());
+            session.setAttribute("perfil", perfil);
 
-        String destino = "ADMIN".equals(perfil) ? "/admin" : "/inicio";
-        response.sendRedirect(request.getContextPath() + destino);
+            String destino = "ADMIN".equals(perfil) ? "/admin" : "/inicio";
+            response.sendRedirect(request.getContextPath() + destino);
+        } catch (SQLException e) {
+            Pagina.bancoIndisponivel(response);
+        }
     }
 }

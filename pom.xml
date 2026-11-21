@@ -27,11 +27,11 @@
             <artifactId>jbcrypt</artifactId>
             <version>0.4</version>
         </dependency>
-        <!-- Dependência do Servlet API compatível com Tomcat 7 (javax.servlet) -->
+        <!-- API Jakarta Servlet 6.0, compatível com Tomcat 10.1 -->
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
-            <version>6.1.0</version>
+            <version>6.0.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -44,35 +44,57 @@
             <artifactId>jakarta.servlet.jsp.jstl</artifactId>
             <version>3.0.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.11.4</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
+        <sourceDirectory>backend/src/main/java</sourceDirectory>
+        <testSourceDirectory>backend/src/test/java</testSourceDirectory>
         <resources>
             <resource>
-                <directory>src/main/resources</directory>
-                <excludes>
-                    <exclude>webapp/**</exclude>
-                </excludes>
+            <directory>backend/src/main/resources</directory>
             </resource>
         </resources>
         <plugins>
-            <!-- Plugin para rodar o Tomcat direto pelo Maven -->
             <plugin>
-                <groupId>org.apache.tomcat.maven</groupId>
-                <artifactId>tomcat7-maven-plugin</artifactId>
-                <version>2.2</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.5.2</version>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.cargo</groupId>
+                <artifactId>cargo-maven3-plugin</artifactId>
+                <version>1.10.16</version>
                 <configuration>
-                    <port>8080</port>
-                    <path>/</path>
+                    <container>
+                        <containerId>tomcat10x</containerId>
+                        <type>installed</type>
+                        <zipUrlInstaller>
+                            <url>https://dlcdn.apache.org/tomcat/tomcat-10/v10.1.62/bin/apache-tomcat-10.1.62.zip</url>
+                            <downloadDir>${project.build.directory}/cargo/downloads</downloadDir>
+                            <extractDir>${project.build.directory}/cargo/installs</extractDir>
+                        </zipUrlInstaller>
+                    </container>
+                    <configuration>
+                        <type>standalone</type>
+                        <properties>
+                            <cargo.servlet.port>8080</cargo.servlet.port>
+                            <cargo.rmi.port>18205</cargo.rmi.port>
+                        </properties>
+                    </configuration>
                 </configuration>
             </plugin>
-            <!-- Mantém as páginas na pasta webapp que o projeto já usa. -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>3.4.0</version>
                 <configuration>
-                    <warSourceDirectory>${project.basedir}/src/main/resources/webapp</warSourceDirectory>
+                    <warSourceDirectory>frontend/src/main/webapp</warSourceDirectory>
                 </configuration>
             </plugin>
         </plugins>

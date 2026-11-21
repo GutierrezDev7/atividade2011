@@ -6,7 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class UsuarioDAO {
-    public boolean cadastrar(Usuario usuario){
+    public boolean cadastrar(Usuario usuario) throws SQLException {
         String sql = """
                 INSERT INTO usuarios
                 (login, senha, status, perfil) VALUES(?,?,true,'CLIENTE')""";
@@ -19,12 +19,9 @@ public class UsuarioDAO {
             stmt.setString(2,senhaHash);
             stmt.executeUpdate();
             return true;
-        }catch (SQLException e){
-            e.printStackTrace();
-            return false;
         }
     }
-    public boolean inativarUsuario(Usuario usuario) {
+    public boolean inativarUsuario(Usuario usuario) throws SQLException {
         String sql = "UPDATE usuarios SET status = false WHERE id = ?";
 
         try (Connection conexao = Conexao.conectar();
@@ -33,13 +30,9 @@ public class UsuarioDAO {
             stmt.setInt(1, usuario.getId());
             int linhasAfetadas = stmt.executeUpdate();
             return linhasAfetadas == 1;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
         }
     }
-    public Usuario consultarUsuario (String login){
+    public Usuario consultarUsuario (String login) throws SQLException {
         String sql = """
                 SELECT id, login, senha, status
                 FROM usuarios
@@ -49,23 +42,22 @@ public class UsuarioDAO {
         PreparedStatement stmt = conexao.prepareStatement(sql)){
             stmt.setString(1, login);
 
-            ResultSet result = stmt.executeQuery();
-            if(result.next()){
-                return new Usuario(
-                        result.getInt("id"),
-                        result.getString("login"),
-                        result.getString("senha"),
-                        result.getBoolean("status")
-                );
+            try (ResultSet result = stmt.executeQuery()) {
+                if (result.next()) {
+                    return new Usuario(
+                            result.getInt("id"),
+                            result.getString("login"),
+                            result.getString("senha"),
+                            result.getBoolean("status")
+                    );
+                }
             }
-        }catch (SQLException e){
-            e.printStackTrace();
         }
 
         return null;
     }
 
-    public String consultarPerfil(String login) {
+    public String consultarPerfil(String login) throws SQLException {
         String sql = "SELECT perfil FROM usuarios WHERE login = ? AND status = true";
         try (Connection conexao = Conexao.conectar();
              PreparedStatement stmt = conexao.prepareStatement(sql)) {
@@ -73,13 +65,10 @@ public class UsuarioDAO {
             try (ResultSet resultado = stmt.executeQuery()) {
                 return resultado.next() ? resultado.getString("perfil") : null;
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
         }
     }
 
-    public static boolean autenticar(String login, String senha) {
+    public static boolean autenticar(String login, String senha) throws SQLException {
         if (login == null || senha == null) {
             return false;
         }
